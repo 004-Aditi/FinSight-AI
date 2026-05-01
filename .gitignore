@@ -1,0 +1,13 @@
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env variables
+.env
+
+# H2 database files (if you switch to file-based later)
+*.mv.db
+*.trace.db
