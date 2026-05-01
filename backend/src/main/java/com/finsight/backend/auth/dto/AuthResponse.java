@@ -6,5 +6,6 @@ public record AuthResponse(
         UUID userId,
         String name,
         String email,
-        String message) {
+        String message,
+        String token) {
 }

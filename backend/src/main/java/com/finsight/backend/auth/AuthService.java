@@ -3,6 +3,7 @@ package com.finsight.backend.auth;
 import com.finsight.backend.auth.dto.AuthResponse;
 import com.finsight.backend.auth.dto.LoginRequest;
 import com.finsight.backend.auth.dto.SignupRequest;
+import com.finsight.backend.security.JwtService;
 import com.finsight.backend.user.User;
 import com.finsight.backend.user.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,12 +16,15 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public AuthService(
             UserRepository userRepository,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public AuthResponse signup(SignupRequest request) {
@@ -36,11 +40,14 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
+        String token = jwtService.generateToken(savedUser.getEmail());
+
         return new AuthResponse(
                 savedUser.getId(),
                 savedUser.getName(),
                 savedUser.getEmail(),
-                "Signup successful");
+                "Signup successful",
+                token);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -55,10 +62,13 @@ public class AuthService {
             throw new RuntimeException("Invalid email or password");
         }
 
+        String token = jwtService.generateToken(user.getEmail());
+
         return new AuthResponse(
                 user.getId(),
                 user.getName(),
                 user.getEmail(),
-                "Login successful");
+                "Login successful",
+                token);
     }
 }
