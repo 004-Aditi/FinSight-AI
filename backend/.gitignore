@@ -45,3 +45,4 @@ Thumbs.db
 # H2 database files (if you switch to file-based later)
 *.mv.db
 *.trace.db
+

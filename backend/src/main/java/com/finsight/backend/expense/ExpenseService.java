@@ -6,9 +6,12 @@ import com.finsight.backend.user.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 public class ExpenseService {
@@ -101,5 +104,49 @@ public class ExpenseService {
                 expense.getExpenseDate(),
                 expense.getCreatedAt(),
                 expense.getUpdatedAt());
+    }
+
+    public List<ExpenseResponse> getExpensesByDateRange(
+            LocalDate startDate,
+            LocalDate endDate) {
+        User currentUser = getCurrentUser();
+
+        return expenseRepository
+                .findByUserAndExpenseDateBetweenOrderByExpenseDateDesc(
+                        currentUser,
+                        startDate,
+                        endDate)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public List<ExpenseResponse> getExpensesByCategory(String category) {
+        User currentUser = getCurrentUser();
+
+        return expenseRepository
+                .findByUserAndCategoryIgnoreCase(currentUser, category)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    public double getTotalSpending() {
+        User currentUser = getCurrentUser();
+
+        return expenseRepository.findByUserOrderByExpenseDateDesc(currentUser)
+                .stream()
+                .mapToDouble(e -> e.getAmount().doubleValue())
+                .sum();
+    }
+
+    public Map<String, Double> getCategorySummary() {
+        User currentUser = getCurrentUser();
+
+        return expenseRepository.findByUserOrderByExpenseDateDesc(currentUser)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        Expense::getCategory,
+                        Collectors.summingDouble(e -> e.getAmount().doubleValue())));
     }
 }
