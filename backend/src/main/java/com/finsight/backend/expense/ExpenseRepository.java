@@ -27,4 +27,5 @@ public interface ExpenseRepository extends JpaRepository<Expense, UUID> {
             User user,
             LocalDate startDate,
             LocalDate endDate);
+
 }
