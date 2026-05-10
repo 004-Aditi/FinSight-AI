@@ -1,0 +1,13 @@
+import api from "./axios";
+
+export const signup = async (data) => {
+  return api.post("/auth/signup", data);
+};
+
+export const login = async (data) => {
+  return api.post("/auth/login", data);
+};
+
+export const getProfile = () => {
+  return api.get("/auth/me");
+};

@@ -6,7 +6,7 @@ import com.finsight.backend.budget.dto.BudgetStatusResponse;
 import com.finsight.backend.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.UUID;
 import java.util.List;
 
 @RestController
@@ -43,5 +43,23 @@ public class BudgetController {
         return ApiResponse.success(
                 "Budget status fetched successfully",
                 budgetService.getBudgetStatus(month, year));
+    }
+
+    @PutMapping("/{id}")
+    public ApiResponse<BudgetResponse> updateBudget(
+            @PathVariable UUID id,
+            @Valid @RequestBody BudgetRequest request) {
+        return ApiResponse.success(
+                "Budget updated successfully",
+                budgetService.updateBudget(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<String> deleteBudget(@PathVariable UUID id) {
+        budgetService.deleteBudget(id);
+
+        return ApiResponse.success(
+                "Budget deleted successfully",
+                null);
     }
 }

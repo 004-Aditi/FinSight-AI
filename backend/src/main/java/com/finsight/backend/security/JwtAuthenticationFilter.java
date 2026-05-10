@@ -37,7 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         System.out.println("PATH = " + path);
 
         // ✅ Skip auth APIs completely
-        if (path.contains("/auth")) {
+        // Skip only public auth APIs
+        if (path.equals("/auth/signup") || path.equals("/auth/login")) {
             filterChain.doFilter(request, response);
             return;
         }

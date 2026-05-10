@@ -122,6 +122,40 @@ public class BudgetService {
                 status);
     }
 
+    public BudgetResponse updateBudget(UUID id, BudgetRequest request) {
+        User currentUser = getCurrentUser();
+
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+
+        if (!budget.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("You are not allowed to update this budget");
+        }
+
+        budget.setCategory(request.category());
+        budget.setAmount(request.amount());
+        budget.setMonth(request.month());
+        budget.setYear(request.year());
+        budget.setUpdatedAt(LocalDateTime.now());
+
+        Budget updatedBudget = budgetRepository.save(budget);
+
+        return mapToResponse(updatedBudget);
+    }
+
+    public void deleteBudget(UUID id) {
+        User currentUser = getCurrentUser();
+
+        Budget budget = budgetRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Budget not found"));
+
+        if (!budget.getUser().getId().equals(currentUser.getId())) {
+            throw new RuntimeException("You are not allowed to delete this budget");
+        }
+
+        budgetRepository.delete(budget);
+    }
+
     private String getStatus(double usagePercentage) {
         if (usagePercentage >= 100) {
             return "EXCEEDED";
